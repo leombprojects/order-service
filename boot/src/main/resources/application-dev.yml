@@ -1,5 +1,5 @@
 logging.level:
-  org.leombprojects: DEBUG
+  org.leombprojects: ERROR
   org:
     springframework:
       security: TRACE
@@ -21,6 +21,9 @@ spring:
     username: citus
     password: empC@lories
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5  # Set the maximum number of connections in the pool
+      minimum-idle: 5
   jpa:
     show-sql: false
     hibernate:
