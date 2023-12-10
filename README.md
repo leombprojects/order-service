@@ -6,6 +6,14 @@ The Order Service handles the creation and updating of orders.
 
 The Order Service, is responsible for managing user orders. It receives user selections for entry, main course, and beverages, storing the data in the database. Additionally, it provides functionality to retrieve a summary of ordered items, including their respective calorie counts and the total calories for the entire order.
 
+## Architecture Diagram
+
+![img.png](architecture.png)
+
+## Database Diagram
+
+![img.png](database.png)
+
 ## Technologies
 
 - Java 17 with Spring Boot
