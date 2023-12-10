@@ -1,0 +1,54 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    clean: true
+    persistCredentials: true
+
+  - task: Maven@4
+    displayName: 'Maven build'
+    inputs:
+      mavenPomFile: 'pom.xml'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+      sonarQubeRunAnalysis: false
+
+
+  - task: Docker@0
+    displayName: 'Building Docker image'
+    inputs:
+      azureSubscription: '55810e90-1a86-417b-b294-ff177412f3f5'
+      azureContainerRegistry: '{"loginServer":"acrempcalories.azurecr.io", "id" : "/subscriptions/55810e90-1a86-417b-b294-ff177412f3f5/resourceGroups/resource-group-emp-calories/providers/Microsoft.ContainerRegistry/registries/acrempcalories"}'
+      includeLatestTag: true
+
+  - task: Docker@0
+    displayName: 'Pushing Docker image to ACR'
+    inputs:
+      azureSubscription: '55810e90-1a86-417b-b294-ff177412f3f5'
+      azureContainerRegistry: '{"loginServer":"acrempcalories.azurecr.io", "id" : "/subscriptions/55810e90-1a86-417b-b294-ff177412f3f5/resourceGroups/resource-group-emp-calories/providers/Microsoft.ContainerRegistry/registries/acrempcalories"}'
+      action: 'Push an image'
+      includeLatestTag: true
+
+  - task: CopyFiles@2
+    displayName: 'Coping AKS deployment descriptor to staging dir: $(build.artifactstagingdirectory)'
+    inputs:
+      Contents: 'aks-deployment-dev.yml'
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Generating AKS deployment artifact to CD: drop'

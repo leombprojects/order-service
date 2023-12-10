@@ -1,0 +1,177 @@
+openapi: 3.0.0
+security:
+  - bearerAuth: [ ]
+
+info:
+  description: Order Service API
+  title: Order Service
+  version: 1.0.0-SNAPSHOT
+
+tags:
+  - name: "Web API"
+    description: "Web API Endpoints"
+paths:
+  "/health/check":
+    get:
+      summary: Health check endpoint
+      description: Health check endpoint
+      operationId: getHealthCheck
+      responses:
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessHealthCheck'
+        "200":
+          description: Service is healthy and running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessHealthCheck'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessHealthCheck'
+
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessHealthCheck'
+  "/order/create":
+    post:
+      summary: Creates a new order
+      description: Creates a new order
+      operationId: createNewOrder
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaloriesSummary'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  "/order/update":
+    put:
+      summary: Updates a order
+      description: Updates a order
+      operationId: updateOrder
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaloriesSummary'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+    SuccessHealthCheck:
+      properties:
+        success:
+          type: boolean
+    Employee:
+      properties:
+        username:
+          type: string
+    ItemInput:
+      properties:
+        code:
+          type: string
+    ItemOutput:
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        desc:
+          type: string
+        course:
+          type: string
+        calories:
+          type: number
+    Order:
+      properties:
+        order:
+          type: integer
+        employee:
+          $ref: '#/components/schemas/Employee'
+        itemList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemInput'
+    CaloriesSummary:
+      properties:
+        order:
+          type: integer
+        employee:
+          $ref: '#/components/schemas/Employee'
+        itemList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemOutput'
+        caloriesTotal:
+          type: integer

@@ -1,0 +1,42 @@
+apiVersion: apps/V1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchlabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: order-service
+          image: acrempcalories.azurecr.io/order-service:#{Build.BuildId}#
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8097
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: order-service
+    k8s-app: order-service
+  name: order-service
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8090
+  selector:
+    app: order-service
